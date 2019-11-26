@@ -14,21 +14,21 @@ app.get("/tasks", function (request, response) {
           id : 001,
           taskDescription: "order inhalers",
           completed: false,
-          creationDate: 2019-11-19,
+          creationDate: "2019-11-19",
           user: 2,
       },
       {
           id : 002,
           taskDescription: "complete shopping for trip",
           completed: true,
-          creationDate: 2019-11-15,
+          creationDate: "2019-11-15",
           user: 1,
       },
       {
           id : 003,
           taskDescription: "book flight",
           completed: false,
-          creationDate: 2019-11-18,
+          creationDate: "2019-11-18",
           user: 1,
       },
       {
@@ -42,14 +42,14 @@ app.get("/tasks", function (request, response) {
           id : 005,
           taskDescription: "pay credit card",
           completed: false,
-          creationDate: 2019-11-21,
+          creationDate: "2019-11-21",
           user: 2, 
       },
       {
           id : 006,
           taskDescription: "change energy suppliers",
           completed: true,
-          creationDate: 2019-10-30,
+          creationDate: "2019-10-30",
           user: 1,
       }
 
