@@ -1,9 +1,9 @@
 const express = require("express");
 const serverlessHttp = require("serverless-http");
 const cors = require("cors");
-const bodyparser= require("body-parser");
+const bodyparser = require("body-parser");
 const mysql = require("mysql");
-
+const uuidv4 = require("uuid/v4");
 const app = express();
 
 // allows Express to parse JSON ddata that is sent on the body of any requests
@@ -19,84 +19,84 @@ const connection = mysql.createConnection({
 
 app.get("/tasks", function (request, response) {
 
-  connection.query("SELECT * FROM task", function(err, data) {
+  connection.query("SELECT * FROM task", function (err, data) {
     if (err) {
       console.log("Error fetching tasks", err);
       response.status(500).json({
         error: err
       });
-    } else {
+    } 
+    else {
       response.json({
         tasks: data
       });
     }
   });
+})
 
-  
-
-  app.post("/tasks", function (request, response) {
-    const taskId = request.params.id;
-    const task = {
-      id: uuidv4(),
-      userId: request.body.userId,
-      taskDescription: request.body.text,
-      completed: request.body.completed
+app.post("/tasks", function (request, response) {
+  const id = request.params.id;
+  const task={
+    id:uuidv4(),
+    taskDescription:request.body.taskDescription,
+    completed:request.body.completed,
+    creationDate:request.body.creationDate,
+    userId:request.body.userId,
     }
-    connection.query("INSERT INTO task SET ? ", task, function (err, data) {
-      if (err) {
-        console.log("Error inserting task", err);
-        response.status(500).json({
-          error: err
-        });
-      } else {
-        console.log("Created task with id " + id);
-        response.status(201).send({
-          tasks: data
-        });
-      }
-    });
-  });
-
-
-  app.delete("/tasks/:id", function (request, response) {
-    const id = request.params.id;
-    connection.query("DELETE FROM task WHERE id = ? ", [id], function (err, data) {
-      if (err) {
-        console.log("Error deleting task with id ", err);
-        response.status(500).json({
-          error: err
-        });
-      } else {
-        console.log("Deleted task with id " + id)
-        response.status(200).send({
-          tasks: data
-        });
-      }
-    });
-  });
   
+  connection.query("INSERT INTO task SET ? ", task, function (err, data) {
+    if (err) {
+      console.log("Error inserting task", err);
+      response.status(500).json({
+        error: err
+      });
+    } else {
+      console.log("Created task with id " + id);
+      response.status(201).send({
+        tasks: data
+      });
+    }
+  });
+});
+
+app.delete("/tasks/:id", function (request, response) {
+  const id = request.params.id;
+  connection.query("DELETE FROM task WHERE id = ? ", [id], function (err, data) {
+  if (err) {
+  console.log("Error deleting task with id ", err);
+  response.status(500).json({
+  error: err
+  });
+  } else {
+  console.log("Deleted task with id " + id)
+  response.status(200).send({
+  tasks: data
+  });
+  }
+  });
+  });
   app.put("/tasks/:id", function (request, response) {
-    const id = request.params.taskId;
-    const updatedTask = request.body.text;
-    connection.query("UPDATE task SET completed = ? WHERE id = ?", [0, id], function (err, data) {
+    //update task
+    const id= request.params.id;
+    const updatedTask = request.body.completed;
+    connection.query('UPDATE task SET completed = ? WHERE id = ?', [updatedTask, id], function (err, data) {
       if (err) {
         console.log("Error updating task with id " + id, err);
         response.status(500).json({
           error: err
         });
       } else {
-        console.log(updatedTask.insertId)
+        console.log(updatedTask.insertedId)
         response.status(200).send({
           tasks: data
         })
       }
     });
-  });
+    });
   
   
-  
-  module.exports.tasks = serverlessHttp(app);
 
+module.exports.tasks = serverlessHttp(app);
 
 
 
@@ -119,73 +119,19 @@ app.get("/tasks", function (request, response) {
 
 
 
-// Do the logic for getting all the tasks from the DB
-//   response.status(200).send({
-//     tasks: [
-//       {id : 001, taskDescription: "order inhalers", completed: false, creationDate: "2019-11-19", user: 2},
-//       {id : 002, taskDescription: "complete shopping for trip", completed: true, creationDate: "2019-11-15", user: 1},
-//       {id : 003, taskDescription: "book flight", completed: false, creationDate: "2019-11-18", user: 1},
-//       {id : 004, taskDescription: "complete CV", completed: true, creationDate: 2019-11-05, user: 1},
-//       {id : 005, taskDescription: "pay credit card", completed: false, creationDate: "2019-11-21", user: 2},
-//       {id : 006, taskDescription: "change energy suppliers", completed: true, creationDate: "2019-10-30", user: 1} 
-//     ]
-//   });
-// });
-});
 
-// app.post("/tasks", function (request, response) {
-//   connection.query('SELECT * FROM `task` WHERE `id` = ?', [''], function (err, str) {
-//     if (str) {
-//       response.status(201).send("Successfully created task: " + task.text);({
-//       });
-//     } else {
-//       response.json({
-//         tasks: err
-//       });
-//     }
-//   }
 
 
 
 
-//     // error will be an Error if one occurred during the query
-//     // results will contain the results of the query
-//     // fields will contain information about the returned results fields (if any)
 
 
 
 
-// //   // Do the logic for saving the new task in the DB
-// //   const task = request.body;
-// //   // { text: "do the dishes", completed: true, date: "2019" }
-// //   response.status(201).send("Successfully created task: " + task.text);
-// // INSERT SQL
-// // });
 
-// // my fields from state in app.js
-// // text
-// // completed
-// // dateDone
-// // dateDue
-// // id
-// // possibly userid
 
-// app.delete("/tasks/:taskId", function (request, response) {
-//   // const taskId = request.params.taskId;
-//   // response.status(200).send("Received request to Delete task with id " + taskId);
-//  // DELETE SQL
-// });
-// app.put("/tasks/:taskId", function (request, response) {
-// //update task
-//   // const taskId = request.params.taskId;
-//   // const updatedTask = request.body;
-//   // // eslint-disable-next-line no-undef
-//   // response.status(200).send(" Update task with id " + taskId + " with " + task.text + task.completed );
-// //PUT SQL
-// });
 
 
-// module.exports.tasks=serverlessHttp(app);
 
 
 
@@ -205,17 +151,3 @@ app.get("/tasks", function (request, response) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
